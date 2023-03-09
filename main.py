@@ -17,9 +17,17 @@ my_posts = [{"title":"title post 1", "content":"content post 1", "id":1},
 
 def find_post(id):
     id = int(id)
+    print("finding post")
     for p in my_posts:
         if p["id"] == id:
+            print(p)
             return p
+
+def find_index_post(id):
+    for i,p in enumerate(my_posts):
+        if p['id'] == id:
+            print("TYPE ", type(id))
+            return i
 
 
 @app.get("/")
@@ -48,3 +56,12 @@ def get_post(id: int, response: Response): #validates and converts id into an in
         detail=f"post with id: {id} was not found")
       
     return {"post_detail": f"Here is post {post}"}
+
+@app.delete("/posts/{id}")#don't send any data back when user deletes. send 204 status
+def delete_post(id: int):
+    #find index in array that has required id
+    index = find_index_post(id)
+    if index == None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail=f"Post with id:{id} does not exist")
+    my_posts.pop(index)
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
